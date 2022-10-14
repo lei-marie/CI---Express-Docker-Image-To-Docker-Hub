@@ -22,11 +22,12 @@ jobs:
       - name: Checkout code
       - uses: actions/checkout@v2 # may be actions/checkout@v2 now
       - name: Login to DockerHub Registry
-        run: ${{ secrets.DOCKERHUB_USERNAME }} | ${{ secrets.DOCKERHUB_PASSWORD }}
-      - name: Get the version
-        id: vars
-        run: echo ::set-output name=tag::$(echo ${GITHUB_REF:10})
-      - name: Build the tagged Docker image
-        run: docker build -t jrwtango/c2express002 .
-      - name: Push the tagged Docker image
-        run: docker push jrwtango/c2express002
+        run:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+      - name: Publish to Docker Hub
+        uses: docker/build-push-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
